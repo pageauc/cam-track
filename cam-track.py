@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 progname = "cam-track.py"
-ver = "version 0.85"
+ver = "version 0.86"
 
 """
 cam-track written by Claude Pageau pageauc@gmail.com
@@ -20,17 +20,22 @@ other movements in the frame although this can be tuned out somewhat
 using cam_move_x and cam_move_y global variables
 
 This runs under python2 and openCV2 
+Github Repo https://github.com/pageauc/rpi-cam-track
 
-installation
+Installation
 -------------
-sudo apt-get update
-sudo apt-get upgrade
-sudo apt-get install -y python-opencv python-picamera
-mkdir ~/cam-track
+Easy Install of cam-track onto a Raspberry Pi Computer with latest Raspbian.
+Cut and Paste line below into an SSH or console terminal session
+
+curl -L https://raw.github.com/pageauc/rpi-cam-track/master/cam-track-install.sh | bash
+
+To Run
+------
+
 cd ~/cam-track
-wget https://raw.github.com/pageauc/motion-track/master/cam-track/cam-track.py
-chmod +x cam-track.py  
-./cam-track.py       # defaults to run from RPI desktop terminal session
+./cam-track.py
+
+To Change Variable Use Nano to edit cam-track.py
 
 Good Luck  Claude ...
 
@@ -52,7 +57,7 @@ import numpy as np
 #-----------------------------------------------------------------------------------------------  
 # Global Variable Settings
 debug = True      # Set to False for no data display
-window_on = True  # Set to True displays opencv windows (GUI desktop reqd)
+window_on = True  # False=terminal only True-opencv windows (GUI desktop reqd)
 fps_on = False    # Display fps (not implemented)
 
 # Sets the maximum x y pixels that are allowed to reduce effect of objects moving in frame
