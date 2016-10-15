@@ -1,11 +1,5 @@
 # cam-track.py  - Camera Movement Tracker Demo
-#### A Raspberry Pi Camera Pan-Tilt Tracker using openCV2 & Video Stream Thread
-
-### Links
-YouTube Video Demo https://youtu.be/yjA3UtwbD80   
-YouTube Video Code Walkthrough https://youtu.be/lkh3YbbNdYg   
-RPI Forum Post https://www.raspberrypi.org/forums/viewtopic.php?p=1027463#p1027463  
-Github Repo https://github.com/pageauc/rpi-cam-track   
+#### A Raspberry Pi Camera Pan-Tilt Tracker using openCV2 & Video Stream
 
 ### Quick Install   
 Easy Install of cam-track onto a Raspberry Pi Computer with latest Raspbian. 
@@ -28,6 +22,12 @@ From logged in RPI SSH session or console terminal perform the following.
     cd rpi-cam-track
     ./cam-track.py
 
+### Reference Links
+YouTube Video Demo https://youtu.be/yjA3UtwbD80   
+YouTube Video Code Walkthrough https://youtu.be/lkh3YbbNdYg   
+RPI Forum Post https://www.raspberrypi.org/forums/viewtopic.php?p=1027463#p1027463  
+Github Repo https://github.com/pageauc/rpi-cam-track   
+    
 ### Program Description
 This is a raspberry pi computer openCV2 program that tracks camera (pan/tilt)
  movements. It requires a RPI camera module installed and working. The program is 
@@ -70,7 +70,10 @@ on this demo.
 ### Tuning
 You may have to experiment with some settings to optimize performance.
 If there are plain backgrounds or random motions in camera view then the
-tracking values may get out of sync.
+tracking values may drift out of sync.
+Edit the config.py file per variable comments using the nano editor or similar.
+I personally like to use filezilla configured with SFTP-SSH Protocol to transfer files to/from my
+various Raspberry Pi computers and then edit on my PC using NotePad ++.
 
 The main variables are
 
@@ -92,12 +95,12 @@ Balance the setting with the normal expected cam movement speed.
 defaults are 10 and 8
 
 
-Use a text editor to review code for other variable settings.  Eg. 
+Use a text editor to review config.py file for other variable settings.  Eg. 
 
     nano cam-track.py
     
 nano editor is just a suggestion.  You can use whatever editor you are
-comforable with
+comfortable with
 
 
 ### Credits

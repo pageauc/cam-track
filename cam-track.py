@@ -44,6 +44,35 @@ print("%s %s using python2 and OpenCV2" % (progname, ver))
 print("Camera movement (pan/tilt) Tracker using openCV2 image searching")
 print("Loading Please Wait ....")
 
+import os
+mypath=os.path.abspath(__file__)       # Find the full path of this python script
+baseDir=mypath[0:mypath.rfind("/")+1]  # get the path location only (excluding script name)
+baseFileName=mypath[mypath.rfind("/")+1:mypath.rfind(".")]
+progName = os.path.basename(__file__)
+
+# Check for variable file to import and error out if not found.
+configFilePath = baseDir + "config.py"
+if not os.path.exists(configFilePath):
+    print("ERROR - Missing config.py file - Could not find Configuration file %s" % (configFilePath))
+    import urllib2
+    config_url = "https://raw.github.com/pageauc/rpi-cam-track/master/config.py"
+    print("   Attempting to Download config.py file from %s" % ( config_url ))
+    try:
+        wgetfile = urllib2.urlopen(config_url)
+    except:
+        print("ERROR - Download of config.py Failed")
+        print("   Try Rerunning the cam-track-install.sh Again.")
+        print("   or")
+        print("   Perform GitHub curl install per Readme.md")
+        print("   and Try Again")
+        print("Exiting %s" % ( progName ))
+        quit()
+    f = open('config.py','wb')
+    f.write(wgetfile.read())
+    f.close()   
+# Read Configuration variables from config.py file
+from config import *
+
 # import the necessary packages
 import time
 import cv2
@@ -55,51 +84,7 @@ from operator import itemgetter
 import numpy as np
 
 #-----------------------------------------------------------------------------------------------  
-# Global Variable Settings
-debug = True      # Set to False for no data display
-window_on = True  # False=terminal only True-opencv windows (GUI desktop reqd)
-fps_on = False    # Display fps (not implemented)
-
-# Sets the maximum x y pixels that are allowed to reduce effect of objects moving in frame
-cam_move_x = 12    # Max number of x pixels in one move
-cam_move_y = 8    # Max number of y pixels in one move 
-
-# Camera Settings
-CAMERA_WIDTH = 320
-CAMERA_HEIGHT = 240
-CAMERA_HFLIP = False
-CAMERA_VFLIP = True
-CAMERA_ROTATION=0
-CAMERA_FRAMERATE = 35  # framerate of video stream.  Can be 100+ with new R2 RPI camera module
-FRAME_COUNTER = 1000   # used by fps
-
-# OpenCV Settings
-show_search_rect = True # show outline of current search box on main window
-show_search_wind = False # show rectangle search_rect_1 window
-show_circle = True      # show a circle otherwise show bounding rectangle on window
-CIRCLE_SIZE = 3         # diameter of circle to show motion location in window
-WINDOW_BIGGER = 2.0     # increase the display window size
-MAX_SEARCH_THRESHOLD = .96 # default=.97 Accuracy for best search result of search_rect in stream images
-LINE_THICKNESS = 1      # thickness of bounding line in pixels
-CV_FONT_SIZE = .25      # size of font on opencv window default .5
-red = (0,0,255)         # opencv line colours
-green = (0,255,0)
-blue = (255,0,0)
-
-# search rectangle variables 
-image_cx = int(CAMERA_WIDTH/2)   # x center of image
-image_cy = int(CAMERA_HEIGHT/2)  # y center of image       
-sw_w = int(CAMERA_WIDTH/4)    # search window width
-sw_h = int(CAMERA_HEIGHT/4)   # search window height
-sw_buf_x = int(sw_w/4)        # buffer to left/right of image
-sw_buf_y = int(sw_h/4)        # buffer to top/bot of image
-sw_x = (image_cx - sw_w/2)    # top x corner of search rect
-sw_y = (image_cy - sw_h/2)    # top y corner of search rect
-sw_xy = (sw_x,sw_y)          # initialize cam position tracker
-
-#-----------------------------------------------------------------------------------------------  
-# Create a Video Stream Tread
-class PiVideoStream:
+class PiVideoStream:     # Create a Video Stream Thread
     def __init__(self, resolution=(CAMERA_WIDTH, CAMERA_HEIGHT), framerate=CAMERA_FRAMERATE, rotation=0, hflip=False, vflip=False):
         # initialize the camera and stream
         self.camera = PiCamera()
