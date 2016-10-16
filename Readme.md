@@ -73,7 +73,7 @@ config.py regarding MATCH_METHOD values.
 For more information regarding match
 methods see http://docs.opencv.org/3.1.0/d4/dc6/tutorial_py_template_matching.html
 
-Possible match methods are below (passed via name or integer) 
+Possible match methods are below (passed via name or integer)    
 cv2.TM_SQDIFF = 0    
 cv2.TM_SQDIFF_NORMED = 1    
 cv2.TM_CCORR = 2    
