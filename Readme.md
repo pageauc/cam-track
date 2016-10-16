@@ -71,6 +71,15 @@ on this demo.
 You may have to experiment with some settings to optimize performance. See comments in
 config.py regarding comparison match method.  For more information regarding match
 methods see http://docs.opencv.org/3.1.0/d4/dc6/tutorial_py_template_matching.html
+
+Possible match methods are below (pass via name or integer) 
+cv2.TM_SQDIFF = 0    
+cv2.TM_SQDIFF_NORMED = 1    
+cv2.TM_CCORR = 2    
+cv2.TM_CCORR_NORMED = 3    
+cv2.TM_CCOEFF = 4    
+cv2.TM_CCOEFF_NORMED = 5    
+
 If there are plain backgrounds or random motions in camera view then the
 tracking values may drift out of sync.
 Edit the config.py file per variable comments using the nano editor or similar.
