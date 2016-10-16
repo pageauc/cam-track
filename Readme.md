@@ -68,7 +68,9 @@ RPI application that does this.  Will try to implement an object searcher based
 on this demo.
                          
 ### Tuning
-You may have to experiment with some settings to optimize performance.
+You may have to experiment with some settings to optimize performance. See comments in
+config.py regarding comparison match method.  For more information regarding match
+methods see http://docs.opencv.org/3.1.0/d4/dc6/tutorial_py_template_matching.html
 If there are plain backgrounds or random motions in camera view then the
 tracking values may drift out of sync.
 Edit the config.py file per variable comments using the nano editor or similar.

@@ -10,6 +10,9 @@ fps_on = False    # Display fps (not implemented)
 cam_move_x = 12    # Max number of x pixels in one move
 cam_move_y = 8    # Max number of y pixels in one move 
 
+vid_from_file = False   # Will read video from File.  Make sure you edit CAMERA_WIDTH and HEIGHT to suit size
+vid_path = '/home/pi/cam-track/cam-track-1.mp4'   # Specifies path of video to use.
+
 # Camera Settings
 CAMERA_WIDTH = 320
 CAMERA_HEIGHT = 240
@@ -25,12 +28,17 @@ show_search_wind = False # show rectangle search_rect_1 window
 show_circle = True      # show a circle otherwise show bounding rectangle on window
 CIRCLE_SIZE = 3         # diameter of circle to show motion location in window
 WINDOW_BIGGER = 2.0     # increase the display window size
-MAX_SEARCH_THRESHOLD = .96 # default=.97 Accuracy for best search result of search_rect in stream images
 LINE_THICKNESS = 1      # thickness of bounding line in pixels
 CV_FONT_SIZE = .25      # size of font on opencv window default .5
 red = (0,0,255)         # opencv line colours
 green = (0,255,0)
 blue = (255,0,0)
+
+# OpenCV MatchTemplate Settings
+MAX_SEARCH_THRESHOLD = .96 # default=.97 Accuracy for best search result of search_rect in stream images
+# Note comparison based on CV_TM_CCOEFF_NORMED method
+# For other comparison methods see http://docs.opencv.org/3.1.0/d4/dc6/tutorial_py_template_matching.html
+# Edit cam-track.py check_image_match function per comments
 
 # search rectangle variables 
 image_cx = int(CAMERA_WIDTH/2)   # x center of image
@@ -41,4 +49,4 @@ sw_buf_x = int(sw_w/4)        # buffer to left/right of image
 sw_buf_y = int(sw_h/4)        # buffer to top/bot of image
 sw_x = int(image_cx - sw_w/2)    # top x corner of search rect
 sw_y = int(image_cy - sw_h/2)    # top y corner of search rect
-sw_xy = (sw_x,sw_y)          # initialize cam position tracker
+sw_xy = (sw_x,sw_y)           # initialize cam position tracker

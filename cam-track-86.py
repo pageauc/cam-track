@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 progname = "cam-track.py"
-ver = "version 0.90"
+ver = "version 0.86"
 
 """
 cam-track written by Claude Pageau pageauc@gmail.com
@@ -149,10 +149,9 @@ def show_FPS(start_time,frame_count):
 #-----------------------------------------------------------------------------------------------  
 def check_image_match(full_image, small_image):
     # Look for small_image in full_image and return best and worst results
-    # Try one of these match method settings below to see what gives best results
-    # For other options see http://docs.opencv.org/3.1.0/d4/dc6/tutorial_py_template_matching.html
+    # Try one of these matchTemplates to see which one works best
     # result = cv2.matchTemplate( full_image, small_image, cv2.TM_CCORR_NORMED)
-    result = cv2.matchTemplate( full_image, small_image, cv2.TM_CCOEFF_NORMED )    
+    result = cv2.matchTemplate( full_image, small_image, cv2.TM_CCOEFF_NORMED)    
     # Process result to return probabilities and Location of best and worst image match
     minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(result)  # find search rect match in new image
     return maxLoc, maxVal
@@ -224,18 +223,11 @@ def cam_track():
     # of image search result Etc.
     
     # Setup Video Stream Thread
-    if vid_from_file:
-        vs = cv2.VideoCapture(vid_path)
-        while not vs.isOpened():
-            image1 = cv2.VideoCapture(vid_path)
-            cv2.waitKey(1000)
-            print "Wait for the header"        
-    else:
-        vs = PiVideoStream().start()
-        vs.camera.rotation = CAMERA_ROTATION
-        vs.camera.hflip = CAMERA_HFLIP
-        vs.camera.vflip = CAMERA_VFLIP
-        time.sleep(2.0)    # Let camera warm up
+    vs = PiVideoStream().start()
+    vs.camera.rotation = CAMERA_ROTATION
+    vs.camera.hflip = CAMERA_HFLIP
+    vs.camera.vflip = CAMERA_VFLIP
+    time.sleep(2.0)    # Let camera warm up
 
     if WINDOW_BIGGER > 1:  # Note setting a bigger window will slow the FPS
         big_w = int(CAMERA_WIDTH * WINDOW_BIGGER)
@@ -245,31 +237,13 @@ def cam_track():
     xy_cam = (0,0)    # xy of Cam Overall Position
     xy_new = sw_xy    # xy of current search_rect
     xy_prev = xy_new  # xy of prev search_rect
-    search_reset = False  # Reset search window back to center 
-     
-    # Read first image frame from video file or camera 
-    if vid_from_file:
-        flag, image1 = vs.read() 
-        cv2.waitKey(1000)   # Wait a little   
-        if flag:
-            search_rect = image1[sw_y:sw_y+sw_h,sw_x:sw_x+sw_w]           
-        else:
-            print "frame is not ready"
-            cv2.waitKey(1000)    
-    else:
-        image1 = vs.read()    # Grab image from video stream thread 
-        search_rect = image1[sw_y:sw_y+sw_h, sw_x:sw_x+sw_w]  # Init centre search rectangle 
-        
+    search_reset = False  # Reset search window back to center    
+    image1 = vs.read()    # Grab image from video stream thread 
+    search_rect = image1[sw_y:sw_y+sw_h, sw_x:sw_x+sw_w]  # Init centre search rectangle
     while True:
-        if vid_from_file:
-            flag, image1 = vs.read()
-            if not flag:
-                cv2.waitKey(1000)  
-        else:
-            image1 = vs.read()    # Grab image from video stream thread 
-            
+        image1 = vs.read()  # Grab a new image1 from video stream thread
+        # Check location of search rect in image1
         xy_new, xy_val = check_image_match(image1, search_rect)
-        
         # Analyse new xy for issues
         if xy_moved(xy_prev, xy_new):
             if (xy_big_move(xy_prev, xy_new) or
