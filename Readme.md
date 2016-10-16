@@ -72,7 +72,7 @@ You may have to experiment with some settings to optimize performance. See comme
 config.py regarding comparison match method.  For more information regarding match
 methods see http://docs.opencv.org/3.1.0/d4/dc6/tutorial_py_template_matching.html
 
-Possible match methods are below (pass via name or integer) 
+Possible match methods are below (passed via name or integer) 
 cv2.TM_SQDIFF = 0    
 cv2.TM_SQDIFF_NORMED = 1    
 cv2.TM_CCORR = 2    
@@ -81,7 +81,7 @@ cv2.TM_CCOEFF = 4
 cv2.TM_CCOEFF_NORMED = 5    
 
 If there are plain backgrounds or random motions in camera view then the
-tracking values may drift out of sync.
+tracking coordinate values may drift out of sync.
 Edit the config.py file per variable comments using the nano editor or similar.
 I personally like to use filezilla configured with SFTP-SSH Protocol to transfer files to/from my
 various Raspberry Pi computers and then edit on my PC using NotePad ++.
@@ -113,6 +113,20 @@ Use a text editor to review config.py file for other variable settings.  Eg.
 nano editor is just a suggestion.  You can use whatever editor you are
 comfortable with
 
+### Developement Ideas
+
+* Save high value search rectangles and position data so when the camera
+view is later in the same zone or vicinity it can use the reference to correct
+camera position.
+* Have a library of preset images of objects or things that can be recognized.
+this could be used for finding something in the camera view.
+* Change or add feature to have camera position tracked in degrees so left
+would start at 360 and right 0 rather than left starting negative and right positive.
+* Add feature to remember a course via larger search rectangles that can be played back
+to repeat course or retrace backwards
+* Add feature to remember camera position data changes (only save changed values within a
+specific +- range) This could include since last reading.  This might be useful for
+repeating actions based on camera tracking.
 
 ### Credits
 
