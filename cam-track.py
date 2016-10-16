@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 progname = "cam-track.py"
-ver = "version 0.90"
+ver = "version 0.91"
 
 """
 cam-track written by Claude Pageau pageauc@gmail.com
@@ -151,7 +151,7 @@ def check_image_match(full_image, small_image):
     # Look for small_image in full_image and return best and worst results
     # Try one of these match method settings below to see what gives best results
     # For other options see http://docs.opencv.org/3.1.0/d4/dc6/tutorial_py_template_matching.html
-    result = cv2.matchTemplate( full_image, small_image, cv2.TM_CCORR_NORMED)
+    result = cv2.matchTemplate( full_image, small_image, COMPARE_METHOD)
     #result = cv2.matchTemplate( full_image, small_image, cv2.TM_CCOEFF_NORMED )    
     # Process result to return probabilities and Location of best and worst image match
     minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(result)  # find search rect match in new image
@@ -282,7 +282,7 @@ def cam_track():
                 xy_prev = xy_new
         
         if search_reset:   # Reset search_rect back to center         
-            if debug:
+            if debug and not log_only_moves:
                 print("cam-track  - Reset search_rect img_xy(%i,%i) CamPos(%i,%i)" 
                                            % (xy_new[0], xy_new[1], xy_cam[0], xy_cam[1]))        
             search_rect = image1[sw_y:sw_y+sw_h, sw_x:sw_x+sw_w]
@@ -290,7 +290,7 @@ def cam_track():
             xy_prev = xy_new            
             search_reset = False
  
-        if debug: 
+        if debug and not log_only_moves : 
             print("cam-track  - Cam Pos(%i,%i) %0.5f  img_xy(%i,%i)" 
                      % ( xy_cam[0], xy_cam[1], xy_val, xy_new[0], xy_new[1] ))
             

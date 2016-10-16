@@ -69,7 +69,8 @@ on this demo.
                          
 ### Tuning
 You may have to experiment with some settings to optimize performance. See comments in
-config.py regarding comparison match method.  For more information regarding match
+config.py regarding MATCH_METHOD values.     
+For more information regarding match
 methods see http://docs.opencv.org/3.1.0/d4/dc6/tutorial_py_template_matching.html
 
 Possible match methods are below (passed via name or integer) 
