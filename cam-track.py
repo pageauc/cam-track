@@ -151,8 +151,8 @@ def check_image_match(full_image, small_image):
     # Look for small_image in full_image and return best and worst results
     # Try one of these match method settings below to see what gives best results
     # For other options see http://docs.opencv.org/3.1.0/d4/dc6/tutorial_py_template_matching.html
-    # result = cv2.matchTemplate( full_image, small_image, cv2.TM_CCORR_NORMED)
-    result = cv2.matchTemplate( full_image, small_image, cv2.TM_CCOEFF_NORMED )    
+    result = cv2.matchTemplate( full_image, small_image, cv2.TM_CCORR_NORMED)
+    #result = cv2.matchTemplate( full_image, small_image, cv2.TM_CCOEFF_NORMED )    
     # Process result to return probabilities and Location of best and worst image match
     minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(result)  # find search rect match in new image
     return maxLoc, maxVal
