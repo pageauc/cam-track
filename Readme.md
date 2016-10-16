@@ -127,6 +127,7 @@ to repeat course or retrace backwards
 * Add feature to remember camera position data changes (only save changed values within a
 specific +- range) This could include since last reading.  This might be useful for
 repeating actions based on camera tracking.
+* Add passing of video file path and/or other information via command line parameter(s)
 
 ### Credits
 
