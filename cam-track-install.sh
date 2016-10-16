@@ -29,7 +29,7 @@ wget -O cam-track-install.sh -q --show-progress https://raw.github.com/pageauc/r
 if [ $? -ne 0 ] ;  then
   wget -O cam-track-install.sh https://raw.github.com/pageauc/rpi-cam-track/master/cam-track-install.sh
   wget -O cam-track.py https://raw.github.com/pageauc/rpi-cam-track/master/cam-track.py
-   wget -O config.py https://raw.github.com/pageauc/rpi-cam-track/master/config.py  
+  wget -O config.py https://raw.github.com/pageauc/rpi-cam-track/master/config.py  
   wget -O Readme.md https://raw.github.com/pageauc/rpi-cam-track/master/Readme.md  
 else
   wget -O cam-track.py -q --show-progress https://raw.github.com/pageauc/rpi-cam-track/master/cam-track.py
