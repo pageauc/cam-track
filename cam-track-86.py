@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 progname = "cam-track.py"
-ver = "version 0.86"
+ver = "version 0.86"  # older version with not ability to read from file
 
 """
 cam-track written by Claude Pageau pageauc@gmail.com
