@@ -201,6 +201,7 @@ def xy_big_move(xy_prev, xy_new):
                               % ( xy_new[0], xy_new[1], cam_move_x, cam_move_y))       
     return big_move
 
+#-----------------------------------------------------------------------------------------------  
 def xy_update(xy_cam, xy_prev, xy_new):
     dx = 0
     dy = 0
