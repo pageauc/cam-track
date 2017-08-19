@@ -113,16 +113,16 @@ will not be able to be met.  Review debug data for your environment.
 #### cam_move_x and cam_move_y - defaults 10 and 8
 These variables set the maximum x and y pixel movement allowed in one loop cycle.
 This reduces unexpected cam position changes when objects move through the 
-camera image view quickly.  The search_rect can lock onto the moving objects
-pixel pattern and track it. When this happens, the cam position
-will get out of sync since it is not tracking the image background properly.
-Balance the setting with the normal expected cam movement speed.  
-defaults are 10 and 8
+camera image view quickly.  
 
+The search_rect can lock onto the moving objects pixel pattern and track it. 
+When this happens, the cam position will get out of sync since it is not 
+tracking the image background properly. Balance the setting with the normal
+expected cam movement speed. defaults are 10 and 8
 
 Use a text editor to review config.py file for other variable settings.  Eg. 
 
-    nano cam-track.py
+    nano config.py
     
 nano editor is just a suggestion.  You can use whatever editor you are
 comfortable with
