@@ -1,22 +1,31 @@
 # cam-track.py  - Camera Movement Tracker Demo
-#### A Raspberry Pi Camera Pan-Tilt Tracker using openCV2 & Video Stream
+#### Windows, Unix or Raspberry Pi Camera Pan-Tilt Tracker using openCV2 template matching
 
 ### Quick Install   
-Easy Install of cam-track onto a Raspberry Pi Computer with latest Raspbian. 
+Easy Install of cam-track onto Raspberry Pi or Debian Computer with latest Raspbian. 
 
-    curl -L https://raw.github.com/pageauc/rpi-cam-track/master/cam-track-install.sh | bash
+    curl -L https://raw.github.com/pageauc/cam-track/master/cam-track-install.sh | bash
 
 From a computer logged into the RPI via ssh(Putty) session use mouse to highlight command above, right click, copy.  
 Then select ssh(Putty) window, mouse right click, paste.  The command should 
 download and execute the github cam-track-install.sh for the raspberry pi camera pan-tilt tracker.  
 This install can also be done directly on an Internet connected Raspberry Pi via a terminal session and web browser.      
-Note - a raspbian apt-get update and upgrade will be performed as part of install 
+Note - A Raspbian apt-get update and upgrade will be performed as part of install 
 so it may take some time if these are not up-to-date
 
+#### Windows and Non RPI Unix Install
+For Windows and Unix computer platforms(non RPI or Debian) ensure you have the most up-to-date
+python version see https://www.python.org/downloads/ for latest versions.  The latest versions
+include numpy and recent opencv that is required to run this code.  You will also need a USB
+web cam installed and working.  To install this program access the GitHub project page at
+https://raw.github.com/pageauc/cam-track and select the green Clone or download zip option.
+the files will be cloned or zipped to a cam-track folder.  You can run the code from
+console, gui desktop or from python IDLE application. 
+ 
 #### or Manual Install   
 From logged in RPI SSH session or console terminal perform the following.
 
-    wget https://raw.github.com/pageauc/rpi-cam-track/master/cam-track-install.sh
+    wget https://raw.github.com/pageauc/cam-track/master/cam-track-install.sh
     chmod +x can-track-install.sh
     ./cam-track-install.sh
     cd rpi-cam-track
@@ -29,17 +38,20 @@ RPI Forum Post https://www.raspberrypi.org/forums/viewtopic.php?p=1027463#p10274
 Github Repo https://github.com/pageauc/rpi-cam-track   
     
 ### Program Description
-This is a raspberry pi computer openCV2 program that tracks camera (pan/tilt)
- movements. It requires a RPI camera module installed and working. The program is 
-written in python2 and uses openCV2.  
+This is a Windows, Unix or Raspberry pi computer openCV2 program that tracks camera (pan/tilt)
+ movements using opencv template matching. It requires a Video File, Web Cam, 
+ RPI camera module installed and working. The program is 
+written in python2/3 and uses openCV2 or 3.  
 
-It captures a search rectangle from the center of a video stream tread image. 
-It then locates the rectangle in subsequent images based on a score value and
-returns the x y location in the image based on a threshold accuracy.  
-If movement gets too close to the sides of the image or
+### How It Works
+Camera video stream (or video file) captures image frames then crops a search rectangle
+from the center of an image. It then locates the cropped image rectangle in subsequent
+images based on a score value and returns the x y location in the image based on a
+threshold accuracy. If movement gets too close to the sides of the image or
 a suitable image search match cannot be found, then another search rectangle
 is selected. This data is processed to track a cumulative pixel location based on
-an initial camera image center value of 0,0.    
+an initial camera image center value of 0,0. 
+   
 This code could be used for a simple robotics application, movement stabilization, 
 searching for an object image in the video stream rather than taking a search
 rectangle from the stream itself.  Eg look for a dog.
@@ -47,7 +59,7 @@ where the camera is mounted on a moving platform or object, Etc.
 I will be working to implement Robot (without wheel encoders) Navigation
 Test using this camera tracking.
 
-### Project - Accurate Robot Navigation without wheel encoders using camera tracking
+### Project - More accurate Robot Navigation without wheel encoders using camera tracking
 I am looking at saving high value search rectangles that
 are spaced out around the full xy range of the camera movement and use those
 to correct any tracking errors. These check point rectangles will also need to
@@ -115,7 +127,7 @@ Use a text editor to review config.py file for other variable settings.  Eg.
 nano editor is just a suggestion.  You can use whatever editor you are
 comfortable with
 
-### Developement Ideas
+### Development Ideas
 
 * Save high value search rectangles and position data so when the camera
 view is later in the same zone or vicinity it can use the reference to correct

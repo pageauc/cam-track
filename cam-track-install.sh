@@ -1,6 +1,7 @@
 #!/bin/bash
-# Convenient cam-track cam-track-install.sh script written by Claude Pageau 1-Jul-2016
-ver="1.2"
+# Convenient Raspberry Pi or Debian
+# cam-track install script written by Claude Pageau 1-Jul-2016
+ver="1.0"
 APP_DIR='cam-track'  # Default folder install location
 
 cd ~
@@ -25,16 +26,16 @@ echo "  $STATUS cam-track for Camera movement tracking"
 echo "------------------------------------------------"
 echo ""
 echo "1 - Downloading GitHub Repo files to $INSTALL_PATH"
-wget -O cam-track-install.sh -q --show-progress https://raw.github.com/pageauc/rpi-cam-track/master/cam-track-install.sh
+wget -O cam-track-install.sh -q --show-progress https://raw.github.com/pageauc/cam-track/master/cam-track-install.sh
 if [ $? -ne 0 ] ;  then
-  wget -O cam-track-install.sh https://raw.github.com/pageauc/rpi-cam-track/master/cam-track-install.sh
-  wget -O cam-track.py https://raw.github.com/pageauc/rpi-cam-track/master/cam-track.py
-  wget -O config.py https://raw.github.com/pageauc/rpi-cam-track/master/config.py  
-  wget -O Readme.md https://raw.github.com/pageauc/rpi-cam-track/master/Readme.md  
+  wget -O cam-track-install.sh https://raw.github.com/pageauc/cam-track/master/cam-track-install.sh
+  wget -O cam-track.py https://raw.github.com/pageauc/cam-track/master/cam-track.py
+  wget -O config.py https://raw.github.com/pageauc/cam-track/master/config.py  
+  wget -O Readme.md https://raw.github.com/pageauc/cam-track/master/Readme.md  
 else
-  wget -O cam-track.py -q --show-progress https://raw.github.com/pageauc/rpi-cam-track/master/cam-track.py
-  wget -O config.py -q --show-progress https://raw.github.com/pageauc/rpi-cam-track/master/config.py  
-  wget -O Readme.md -q --show-progress  https://raw.github.com/pageauc/rpi-cam-track/master/Readme.md  
+  wget -O cam-track.py -q --show-progress https://raw.github.com/pageauc/cam-track/master/cam-track.py
+  wget -O config.py -q --show-progress https://raw.github.com/pageauc/cam-track/master/config.py  
+  wget -O Readme.md -q --show-progress  https://raw.github.com/pageauc/cam-track/master/Readme.md  
 fi
 echo "Done Download"
 echo "------------------------------------------------"
@@ -80,7 +81,7 @@ echo "3. Run cam-track.py with the Raspbian Desktop GUI running"
 echo "4. To start open file manager or a Terminal session then change to" 
 echo "   rpi-cam-track folder and launch per commands below"
 echo ""
-echo "   cd ~/rpi-cam-track"
+echo "   cd ~/cam-track"
 echo "   ./cam-track.py"
 echo ""
 echo "-----------------------------------------------"

@@ -1,29 +1,48 @@
-# cam-track-py configuration file
+# cam-track-py version 1.0 configuration file
+# For Non RPI platforms like Windows or Unix (non RPI)
+# set WEBCAM = True since no RPI camera will be avail
+#-----------------------------------------------------------------------------------------------
 
-#-----------------------------------------------------------------------------------------------  
 # Global Variable Settings
-window_on = True       # True=Display OpenCV Windows (GUI desktop reqd) False=Terminal Only  
+# ========================
+
+window_on = True       # True=Display OpenCV Windows (GUI desktop reqd) False=Terminal Only
+verbose = True         # True=Turn on logging messages False=Turn Off logging messages
+loggingToFile = False  # if verbose=True then send logging messages to a log file (cam-track.log)
 debug = True           # Display log Data True=On False=Off
 log_only_moves = True  # Log True=Only Cam Moves False=All
 fps_on = False         # Display fps (not implemented)
-vid_from_file = False  # Will read video from File.  Make sure you edit CAMERA_WIDTH and HEIGHT to suit size
-vid_path = '/home/pi/cam-track/cam-track-1.mp4'   # Specifies path of video to use.
 # Sets the maximum x y pixels that are allowed to reduce effect of objects moving in frame
 cam_move_x = 12        # Max number of x pixels in one move
-cam_move_y = 8         # Max number of y pixels in one move 
+cam_move_y = 8         # Max number of y pixels in one move
 
-#-----------------------------------------------------------------------------------------------
+vid_from_file = False  # Will read video from File.  Make sure you edit CAMERA_WIDTH and HEIGHT to suit size
+vid_path = '/home/pi/cam-track/cam-track-1.mp4'   # Specifies path of video to use.
+
 # Camera Settings
+# ===============
+WEBCAM = False        # default = False False=PiCamera True=USB WebCamera
+
+# Web Camera Settings
+# -------------------
+WEBCAM_SRC = 0        # default = 0   USB opencv connection number
+WEBCAM_WIDTH = 320    # default = 320 USB Webcam Image width
+WEBCAM_HEIGHT = 240   # default = 240 USB Webcam Image height
+WEBCAM_HFLIP = True   # default = False USB Webcam flip image horizontally
+WEBCAM_VFLIP = False  # default = False USB Webcam flip image vertically
+
+# Camera Settings
+# ---------------
 CAMERA_WIDTH = 320
 CAMERA_HEIGHT = 240
 CAMERA_HFLIP = False
 CAMERA_VFLIP = True
-CAMERA_ROTATION=0
+CAMERA_ROTATION = 0
 CAMERA_FRAMERATE = 35  # framerate of video stream.  Can be 100+ with new R2 RPI camera module
 FRAME_COUNTER = 1000   # used by fps
 
-#-----------------------------------------------------------------------------------------------
 # OpenCV Settings
+# ---------------
 show_search_rect = True  # show outline of current search box on main window
 show_search_wind = False # True=Show search_rect GUI window  False=Window not Shown
 show_circle = True       # Show a circle otherwise show bounding rectangle on window
@@ -36,23 +55,25 @@ green = (0,255,0)
 blue = (255,0,0)
 
 # OpenCV MatchTemplate Settings
+# -----------------------------
 MAX_SEARCH_THRESHOLD = .96 # default=.97 Accuracy for best search result of search_rect in stream images
 MATCH_METHOD = 3
 # Valid MatchTemplate COMPARE_METHOD Int Values
 # ---------------------------------------------
-# 0 = cv2.TM_SQDIFF  = 0  
-# 1 = cv2.TM_SQDIFF_NORMED = 1    
-# 2 = cv2.TM_CCORR = 2    
+# 0 = cv2.TM_SQDIFF  = 0
+# 1 = cv2.TM_SQDIFF_NORMED = 1
+# 2 = cv2.TM_CCORR = 2
 # 3 = cv2.TM_CCORR_NORMED = 3    Default
-# 4 = cv2.TM_CCOEFF = 4    
+# 4 = cv2.TM_CCOEFF = 4
 # 5 = cv2.TM_CCOEFF_NORMED = 5
-#    
+#
 # For other comparison methods see http://docs.opencv.org/3.1.0/d4/dc6/tutorial_py_template_matching.html
 
-#-----------------------------------------------------------------------------------------------
-# Search rectangle variables (Calculated from other variable values)
+# Search rectangle variables
+# Calculated from other variable values
+# -------------------------------------
 image_cx = int(CAMERA_WIDTH/2)   # x center of image
-image_cy = int(CAMERA_HEIGHT/2)  # y center of image       
+image_cy = int(CAMERA_HEIGHT/2)  # y center of image
 sw_w = int(CAMERA_WIDTH/4)       # search window width
 sw_h = int(CAMERA_HEIGHT/4)      # search window height
 sw_buf_x = int(sw_w/4)           # buffer to left/right of image
