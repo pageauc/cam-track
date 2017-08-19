@@ -1,4 +1,4 @@
-# cam-track-py version 1.0 configuration file
+# cam-track-py version 1.1 configuration file
 # For Non RPI platforms like Windows or Unix (non RPI)
 # set WEBCAM = True since no RPI camera will be avail
 #-----------------------------------------------------------------------------------------------
@@ -6,17 +6,17 @@
 # Global Variable Settings
 # ========================
 
-window_on = True       # True=Display OpenCV Windows (GUI desktop reqd) False=Terminal Only
+window_on = False      # True=Display OpenCV Windows (GUI desktop reqd) False=Terminal Only
 verbose = True         # True=Turn on logging messages False=Turn Off logging messages
 loggingToFile = False  # if verbose=True then send logging messages to a log file (cam-track.log)
-debug = True           # Display log Data True=On False=Off
 log_only_moves = True  # Log True=Only Cam Moves False=All
 fps_on = False         # Display fps (not implemented)
+
 # Sets the maximum x y pixels that are allowed to reduce effect of objects moving in frame
 cam_move_x = 12        # Max number of x pixels in one move
 cam_move_y = 8         # Max number of y pixels in one move
 
-vid_from_file = False  # Will read video from File.  Make sure you edit CAMERA_WIDTH and HEIGHT to suit size
+vid_from_file = False  # Make sure you edit CAMERA_WIDTH and HEIGHT to suit vid size
 vid_path = '/home/pi/cam-track/cam-track-1.mp4'   # Specifies path of video to use.
 
 # Camera Settings
@@ -25,21 +25,22 @@ WEBCAM = False        # default = False False=PiCamera True=USB WebCamera
 
 # Web Camera Settings
 # -------------------
-WEBCAM_SRC = 0        # default = 0   USB opencv connection number
-WEBCAM_WIDTH = 320    # default = 320 USB Webcam Image width
-WEBCAM_HEIGHT = 240   # default = 240 USB Webcam Image height
-WEBCAM_HFLIP = True   # default = False USB Webcam flip image horizontally
-WEBCAM_VFLIP = False  # default = False USB Webcam flip image vertically
+WEBCAM_SRC = 0        # default= 0   USB opencv connection number
+WEBCAM_WIDTH = 320    # default= 320 USB Webcam Image width
+WEBCAM_HEIGHT = 240   # default= 240 USB Webcam Image height
+WEBCAM_HFLIP = False  # default= False USB Webcam flip image horizontally
+WEBCAM_VFLIP = False  # default= False USB Webcam flip image vertically
 
-# Camera Settings
-# ---------------
-CAMERA_WIDTH = 320
-CAMERA_HEIGHT = 240
-CAMERA_HFLIP = False
-CAMERA_VFLIP = True
-CAMERA_ROTATION = 0
-CAMERA_FRAMERATE = 35  # framerate of video stream.  Can be 100+ with new R2 RPI camera module
-FRAME_COUNTER = 1000   # used by fps
+# Pi Camera Settings
+# ------------------
+CAMERA_WIDTH = 320    # default= 320 Pi Camera Image width
+CAMERA_HEIGHT = 240   # default= 240 Pi Camera Image width
+CAMERA_HFLIP = False  # default= False pi Camera image horiz flip
+CAMERA_VFLIP = False  # default= False pi Camera image vert flip
+CAMERA_ROTATION = 0   # default= 0  Rotate pi Camera image 0, 90, 180, 270 only valid values
+CAMERA_FRAMERATE = 35 # default= 35 framerate of video stream. 
+                      # Can be 100+ with new R2 RPI camera module
+FRAME_COUNTER = 1000  # default= 1000 image counter for reporting fps
 
 # OpenCV Settings
 # ---------------
@@ -58,16 +59,17 @@ blue = (255,0,0)
 # -----------------------------
 MAX_SEARCH_THRESHOLD = .96 # default=.97 Accuracy for best search result of search_rect in stream images
 MATCH_METHOD = 3
-# Valid MatchTemplate COMPARE_METHOD Int Values
-# ---------------------------------------------
-# 0 = cv2.TM_SQDIFF  = 0
-# 1 = cv2.TM_SQDIFF_NORMED = 1
-# 2 = cv2.TM_CCORR = 2
-# 3 = cv2.TM_CCORR_NORMED = 3    Default
-# 4 = cv2.TM_CCOEFF = 4
-# 5 = cv2.TM_CCOEFF_NORMED = 5
-#
-# For other comparison methods see http://docs.opencv.org/3.1.0/d4/dc6/tutorial_py_template_matching.html
+            # Valid MatchTemplate COMPARE_METHOD Int Values
+            # ---------------------------------------------
+            # 0 = cv2.TM_SQDIFF  = 0
+            # 1 = cv2.TM_SQDIFF_NORMED = 1
+            # 2 = cv2.TM_CCORR = 2
+            # 3 = cv2.TM_CCORR_NORMED = 3    Default
+            # 4 = cv2.TM_CCOEFF = 4
+            # 5 = cv2.TM_CCOEFF_NORMED = 5
+            #
+            # For other comparison methods 
+            # see http://docs.opencv.org/3.1.0/d4/dc6/tutorial_py_template_matching.html
 
 # Search rectangle variables
 # Calculated from other variable values

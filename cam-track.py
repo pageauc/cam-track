@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 progname = "cam-track.py"
-version = "version 1.0"
+version = "version 1.1"
 
 """
 cam-track.py written by Claude Pageau pageauc@gmail.com
@@ -119,7 +119,7 @@ except:
 
 # import the necessary packages
 # -----------------------------
-try:  #Add this check in case running on non RPI platform using web cam
+try:  # Add this check in case running on non RPI platform using web cam
     from picamera.array import PiRGBArray
     from picamera import PiCamera
 except:
@@ -225,7 +225,7 @@ class WebcamVideoStream:
 #-----------------------------------------------------------------------------------------------
 # Currently not used but included in case you want to check speed
 def show_FPS(start_time,frame_count):
-    if debug:
+    if verbose:
         if frame_count >= FRAME_COUNTER:
             duration = float(time.time() - start_time)
             FPS = float(frame_count / duration)
@@ -254,8 +254,8 @@ def xy_at_edge(xy_loc):  # check if search rect is near edge plus buffer space
       or xy_loc[1] < sw_buf_y
       or xy_loc[1] > CAMERA_HEIGHT - (sw_buf_y + sw_h)):
         near_edge = True
-        if debug:
-            logging.info("xy(%i, %i) xyBuf(%i,%i)" %( xy_loc[0], xy_loc[1], sw_buf_x, sw_buf_y))
+        logging.info("xy(%i, %i) xyBuf(%i,%i)" %
+                    ( xy_loc[0], xy_loc[1], sw_buf_x, sw_buf_y))
     return near_edge
 
 #-----------------------------------------------------------------------------------------------
@@ -264,8 +264,7 @@ def xy_low_val(cur_val, val_setting):
     bad_match = False
     if cur_val < val_setting:
         bad_match = True
-        if debug:
-            logging.info("maxVal=%0.5f  threshold=%0.4f" % (cur_val, val_setting))
+        logging.info("maxVal=%0.5f  threshold=%0.4f" % (cur_val, val_setting))
     return bad_match
 
 #-----------------------------------------------------------------------------------------------
@@ -275,9 +274,8 @@ def xy_moved(xy_prev, xy_loc):
     if (xy_loc[0] <> xy_prev[0] or
         xy_loc[1] <> xy_prev[1]):
         moved = True
-        if debug:
-            logging.info("dx=%i dy=%i "
-                         %( xy_loc[0] - xy_prev[0], xy_loc[1] - xy_prev[1]))
+        logging.info("dx=%i dy=%i "
+                     %( xy_loc[0] - xy_prev[0], xy_loc[1] - xy_prev[1]))
     return moved
 
 #-----------------------------------------------------------------------------------------------
@@ -286,8 +284,7 @@ def xy_big_move(xy_prev, xy_new):
     if (abs( xy_new[0] - xy_prev[0] ) > cam_move_x or
         abs( xy_new[1] - xy_prev[1] ) > cam_move_y):
             big_move = True
-            if debug:
-                logging.info("xy(%i,%i) move exceeded %i or %i"
+            logging.info("xy(%i,%i) move exceeded %i or %i"
                               % ( xy_new[0], xy_new[1], cam_move_x, cam_move_y))
     return big_move
 
@@ -300,8 +297,7 @@ def xy_update(xy_cam, xy_prev, xy_new):
     if abs(xy_prev[1] - xy_new[1]) > 0:
         dy = xy_prev[1] - xy_new[1]
     xy_cam = ((xy_cam[0] + dx, xy_cam[1] + dy))
-    if debug:
-        logging.info("cam xy (%i,%i) dxy(%i,%i)"
+    logging.info("cam xy (%i,%i) dxy(%i,%i)"
                          % (xy_cam[0], xy_cam[1], dx, dy))
     return xy_cam
 
@@ -362,15 +358,15 @@ def cam_track():
                 xy_prev = xy_new
 
         if search_reset:   # Reset search_rect back to center
-            if debug and not log_only_moves:
+            if verbose and not log_only_moves:
                 logging.info("Reset search_rect img_xy(%i,%i) CamPos(%i,%i)"
-                                           % (xy_new[0], xy_new[1], xy_cam[0], xy_cam[1]))
+                                % (xy_new[0], xy_new[1], xy_cam[0], xy_cam[1]))
             search_rect = image1[sw_y:sw_y+sw_h, sw_x:sw_x+sw_w]
             xy_new = sw_xy
             xy_prev = xy_new
             search_reset = False
 
-        if debug and not log_only_moves :
+        if verbose and not log_only_moves :
             logging.info("Cam Pos(%i,%i) %0.5f  img_xy(%i,%i)"
                      % ( xy_cam[0], xy_cam[1], xy_val, xy_new[0], xy_new[1] ))
 
@@ -382,7 +378,7 @@ def cam_track():
             if show_search_rect:
                 cv2.rectangle(image2,( xy_new[0], xy_new[1] ),
                                      ( xy_new[0] + sw_w, xy_new[1] + sw_h ),
-                                     green, LINE_THICKNESS)     # show search rect
+                                     green, LINE_THICKNESS)  # show search rect
             # Show Cam Position text on bottom of opencv window
             m_text = ("CAM POS( %i %i )   " % (xy_cam[0], xy_cam[1]))
             cv2.putText(image2, m_text,
