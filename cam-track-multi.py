@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
-progname = "cam-track-multi.py"
-ver = "version 0.9"
+progName = "cam-track-multi.py"
+version = "version 1.0"
 
 """
-Multi Threaded version of cam-track.py
-cam-track written by Claude Pageau pageauc@gmail.com
+Multi Threaded version of cam-track.py for RPI Camera Module Only
+cam-track-multi written by Claude Pageau   pageauc@gmail.com
 Raspberry (Pi) - python opencv2 camera pan/tilt tracking using picamera module
 
 This is a raspberry pi python opencv2 camera tracking demonstration program.
@@ -20,7 +20,7 @@ Note the program can get confused by plain surroundings or some
 other movements in the frame although this can be tuned out somewhat
 using cam_move_x and cam_move_y global variables
 
-This runs under python2 and openCV2 
+This runs under python2 and openCV2
 
 installation
 -------------
@@ -30,35 +30,39 @@ sudo apt-get install -y python-opencv python-picamera
 mkdir ~/cam-track
 cd ~/cam-track
 wget https://raw.github.com/pageauc/motion-track/master/cam-track/cam-track.py
-chmod +x cam-track.py  
+chmod +x cam-track.py
 ./cam-track.py       # defaults to run from RPI desktop terminal session
 
 Good Luck  Claude ...
 
 """
-print("%s %s using python2 and OpenCV2" % (progname, ver))
+print("%s %s using python2 and OpenCV2" % (progName, version))
 print("Camera movement (pan/tilt) Tracker using openCV2 image searching")
 print("Loading Please Wait ....")
 
 # import the necessary packages
 import time
 import cv2
-
-from picamera.array import PiRGBArray
-from picamera import PiCamera
 from threading import Thread
 from operator import itemgetter
 import numpy as np
 
-#-----------------------------------------------------------------------------------------------  
+try:
+    from picamera.array import PiRGBArray
+    from picamera import PiCamera
+except:
+    print("Could Not import pi camera module libraries")
+    pass
+
+#-----------------------------------------------------------------------------------------------
 # Global Variable Settings
-debug = False       # Set to False for no data display
+verbose = False    # Set to False for no data display
 window_on = False  # Set to True displays opencv windows (GUI desktop reqd)
 fps_on = False     # Display fps (not implemented)
 
 # Sets the maximum x y pixels that are allowed to reduce effect of objects moving in frame
 cam_move_x = 12    # Max number of x pixels in one move
-cam_move_y = 8    # Max number of y pixels in one move 
+cam_move_y = 8    # Max number of y pixels in one move
 
 # OpenCV Settings
 show_search_box = True   # show outline of current search box on main window
@@ -75,16 +79,16 @@ red = (0,0,255)
 green = (0,255,0)
 blue = (255,0,0)
 
-# Camera Settings
+# Pi Camera Settings
 CAMERA_WIDTH = 320
 CAMERA_HEIGHT = 240
 CAMERA_HFLIP = False
 CAMERA_VFLIP = True
 CAMERA_ROTATION=0
-CAMERA_FRAMERATE = 35  # framerate of video stream.  Can be 100+ with new R2 RPI camera module
+CAMERA_FRAMERATE = 35  # frame rate of video stream.  Can be 100+ with new R2 RPI camera module
 FRAME_COUNTER = 1000   # used by fps
 
-#-----------------------------------------------------------------------------------------------  
+#-----------------------------------------------------------------------------------------------
 # Create a Video Stream Tread
 class PiVideoStream:
     def __init__(self, resolution=(CAMERA_WIDTH, CAMERA_HEIGHT), framerate=CAMERA_FRAMERATE, rotation=0, hflip=False, vflip=False):
@@ -106,9 +110,9 @@ class PiVideoStream:
 
     def start(self):
         # start the thread to read frames from the video stream
-        t = Thread(target=self.update, args=())
-        t.daemon = True
-        t.start()
+        ts = Thread(target=self.update, args=())
+        ts.daemon = True
+        ts.start()
         return self
 
     def update(self):
@@ -135,10 +139,11 @@ class PiVideoStream:
         # indicate that the thread should be stopped
         self.stopped = True
 
+# Create a Cam Track processing thread
 class PiCamTrack:
     def __init__(self, resolution=(CAMERA_WIDTH, CAMERA_HEIGHT), framerate=CAMERA_FRAMERATE, rotation=0, hflip=False, vflip=False):
 
-        # Process steam images to find camera movement 
+        # Process steam images to find camera movement
         # using an extracted search rectangle in the middle of one frame
         # and find location in subsequent images.  Grap a new search rect
         # as needed based on nearness to edge of image or percent probability
@@ -146,11 +151,11 @@ class PiCamTrack:
 
         if WINDOW_BIGGER > 1:  # Note setting a bigger window will slow the FPS
             self.big_w = int(CAMERA_WIDTH * WINDOW_BIGGER)
-            self.big_h = int(CAMERA_HEIGHT * WINDOW_BIGGER) 
-        
-        # initialize the search window (rect) variables 
+            self.big_h = int(CAMERA_HEIGHT * WINDOW_BIGGER)
+
+        # initialize the search window (rect) variables
         self.image_cx = int(CAMERA_WIDTH/2)   # x center of image
-        self.image_cy = int(CAMERA_HEIGHT/2)  # y center of image       
+        self.image_cy = int(CAMERA_HEIGHT/2)  # y center of image
         self.sw_w = int(CAMERA_WIDTH/4)    # search window width
         self.sw_h = int(CAMERA_HEIGHT/4)   # search window height
         self.sw_buf_x = int(self.sw_w/4)        # buffer to left/right of image
@@ -158,123 +163,125 @@ class PiCamTrack:
         self.sw_x = (self.image_cx - self.sw_w/2)       # top x corner of search rect
         self.sw_y = (self.image_cy - self.sw_h/2)       # top y corner of search rect
         self.sw_maxVal = MAX_SEARCH_THRESHOLD  # Threshold Accuracy of search in image
-       
+
         # Grab a Video Steam image and initialize search rectangle
         self.cam_cx1 = self.image_cx    # Set Cam x center start position
         self.cam_cy1 = self.image_cy    # Set Cam y center start position
         self.cam_pos_x = 0   # initialize cam horizontal movement tracker
         self.cam_pos_y = 0   # initialize cam vertical movement tracker
         self.search_reset = False  # Reset search window
-        self.stopped = False 
-        global cam_position
-        cam_position = (0,0)    # Position of Camera
+        self.stopped = False
+        self.cam_position = [.0,0,0]    # Position of Camera
         self.image1 = None
-        
+
     def start(self):
         ct = Thread(target=self.update, args=())
         ct.daemon = True
         ct.start()
-        return self  
-         
+        return self
+
     def update(self):
-        global cam_position
         # Setup Video Stream Thread
-        vs = PiVideoStream().start()        
+        vs = PiVideoStream().start()
         vs.camera.rotation = CAMERA_ROTATION
         vs.camera.hflip = CAMERA_HFLIP
         vs.camera.vflip = CAMERA_VFLIP
-        time.sleep(2.0)    # Let camera warm up          
+        time.sleep(2.0)    # Let camera warm up
         self.image1 = vs.read()   # initialize first image
-        self.search_rect = (self.image1[self.sw_y:self.sw_y + self.sw_h, 
-                                        self.sw_x:self.sw_x + self.sw_w])  # Initialize centre search rectangle                               
-        keep_processing = True        
-        while keep_processing:
+        self.search_rect = (self.image1[self.sw_y:self.sw_y + self.sw_h,
+                                        self.sw_x:self.sw_x + self.sw_w])  # Initialize centre search rectangle
+        self.keep_processing = True
+        while self.keep_processing:
             self.image1 = vs.read()  # capture a new image1 from video stream thread
             # Look for search_rect in this image and return result
             self.result = cv2.matchTemplate( self.image1, self.search_rect, cv2.TM_CCORR_NORMED)
             # Process result to return probabilities and Location of best and worst image match
             self.minVal, self.maxVal, self.minLoc, self.maxLoc = cv2.minMaxLoc(self.result)  # find search rect match in new image
             # Get the center of the best matching result of search
-            self.cam_cx2, self.cam_cy2 = get_center( self.maxLoc[0], self.maxLoc[1], self.sw_w, self.sw_h ) 
+            self.cam_cx2, self.cam_cy2 = get_center( self.maxLoc[0], self.maxLoc[1], self.sw_w, self.sw_h )
 
             # Update cumulative camera tracking data and check max_move
             if self.cam_cx2 <> self.cam_cx1:
                 if abs(self.cam_cx2 - self.cam_cx1) > cam_move_x:
-                    self.search_reset = True  
-                    if debug:
-                        print("    cam_move_x=%i Exceeded %i" 
-                                 % (abs(self.cam_cx2 - self.cam_cx1), cam_move_x))                        
-                else:                
+                    self.search_reset = True
+                    if verbose:
+                        print("    cam_move_x=%i Exceeded %i"
+                                 % (abs(self.cam_cx2 - self.cam_cx1), cam_move_x))
+                else:
                     self.cam_pos_x = self.cam_pos_x + (self.cam_cx1 - self.cam_cx2)
                     self.cam_cx1 = self.cam_cx2
-                
+
             if self.cam_cy2 <> self.cam_cy1:
                 if abs(self.cam_cy2 - self.cam_cy1) > cam_move_y:
-                    self.search_reset = True            
-                    if debug:
-                        print("    cam_move_y=%i Exceeded %i" 
-                                 % (abs(self.cam_cy2 - self.cam_cy1), cam_move_y))            
-                else:                
+                    self.search_reset = True
+                    if verbose:
+                        print("    cam_move_y=%i Exceeded %i"
+                                 % (abs(self.cam_cy2 - self.cam_cy1), cam_move_y))
+                else:
                     self.cam_pos_y = self.cam_pos_y + (self.cam_cy1 - self.cam_cy2)
                     self.cam_cy1 = self.cam_cy2
-                
+
             # Check if search rect is well inside image1
             # and maxVal and minVal are above threshold
-            if ( self.maxLoc[0] < self.sw_buf_x 
+            if ( self.maxLoc[0] < self.sw_buf_x
               or self.maxLoc[0] > CAMERA_WIDTH - (self.sw_buf_x + self.sw_w)
-              or self.maxLoc[1] < self.sw_buf_y 
+              or self.maxLoc[1] < self.sw_buf_y
               or self.maxLoc[1] > CAMERA_HEIGHT -(self.sw_buf_y + self.sw_h)
               or self.maxVal < self.sw_maxVal):
                 self.search_reset = True
 
-            if self.search_reset:            
-                if debug:
-                    print("    Reset search_rect cur_cx=%i cam_pos_x=%i cur_cy=%i cam_pos_y=%i" 
-                                               % (self.cam_cx2, self.cam_cy2, self.cam_pos_x, self.cam_pos_y))        
-                self.search_rect = (self.image1[self.sw_y:self.sw_y + self.sw_h, 
-                                                self.sw_x:self.sw_x + self.sw_w])              
+            if self.search_reset:
+                if verbose:
+                    print("    Reset search_rect cur_cx=%i cam_pos_x=%i cur_cy=%i cam_pos_y=%i"
+                                               % (self.cam_cx2, self.cam_cy2, self.cam_pos_x, self.cam_pos_y))
+                self.search_rect = (self.image1[self.sw_y:self.sw_y + self.sw_h,
+                                                self.sw_x:self.sw_x + self.sw_w])
                 self.cam_cx1 = self.image_cx
-                self.cam_cy1 = self.image_cy    
-                self.cam_cx2 = self.cam_cx1         
+                self.cam_cy1 = self.image_cy
+                self.cam_cx2 = self.cam_cx1
                 self.cam_cy2 = self.cam_cy1
-                self.search_reset = False               
+                self.search_reset = False
 
-            cam_position = (self.cam_pos_x, self.cam_pos_y)
-            
+            self.cam_position = [self.maxVal, self.cam_pos_x, self.cam_pos_y]
+
             if self.stopped:
                 self.vs.stop()
-                keep_processing = False
+                self.keep_processing = False
                 return
-                
-            if debug: 
+
+            if verbose:
                 print("CamPos (%i, %i) cam_pos_x, cam_pos_y" % ( self.cam_pos_x, self.cam_pos_y, ))
                 print(" maxLoc   maxVal   minLoc   minVal")
-                print self.maxLoc, "{0:0.4f}".format(self.maxVal) ,  self.minLoc ,"{0:0.4f}".format(self.minVal)   
-         
+                print self.maxLoc, "{0:0.4f}".format(self.maxVal) ,  self.minLoc ,"{0:0.4f}".format(self.minVal)
+
     def read(self):
-        return cam_position
+        return self.cam_position
 
     def stop(self):
-        self.stopped = True    
-      
-#-----------------------------------------------------------------------------------------------     
+        self.stopped = True
+
+#-----------------------------------------------------------------------------------------------
 def get_center(x,y,w,h):
-    return int(x+w/2), int(y+h/2)    
-             
-#-----------------------------------------------------------------------------------------------    
+    return int(x+w/2), int(y+h/2)
+
+#-----------------------------------------------------------------------------------------------
 if __name__ == '__main__':
     try:
         ct = PiCamTrack().start()
-        while True:           
-            cam_pos = ct.read()
-            print("Cam Pos (%i, %i)" %( cam_pos[0], cam_pos[1]))          
+        while True:
+            cam_data = ct.read()
+            cam_pos = [cam_data[1],cam_data[2]]
+            print("Cam at (%i,%i) maxVal=%0.4f/%0.4f  " %( cam_pos[0], cam_pos[1], cam_data[0], MAX_SEARCH_THRESHOLD ))           
 
-    finally:
+            
+    except KeyboardInterrupt:
+        ct.stop()
         print("")
         print("+++++++++++++++++++++++++++++++++++")
-        print("%s %s - Exiting" % (progname, ver))
+        print("User Pressed Keyboard ctrl-c")
+        print("%s %s - Exiting" % (progName, version))
         print("+++++++++++++++++++++++++++++++++++")
-        print("")                                
-
+        print("")
+        quit(0)
 
 
