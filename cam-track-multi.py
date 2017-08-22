@@ -85,7 +85,7 @@ CAMERA_HEIGHT = 240
 CAMERA_HFLIP = False
 CAMERA_VFLIP = True
 CAMERA_ROTATION=0
-CAMERA_FRAMERATE = 35  # frame rate of video stream.  Can be 100+ with new R2 RPI camera module
+CAMERA_FRAMERATE = 50  # frame rate of video stream.  Can be 100+ with new R2 RPI camera module
 FRAME_COUNTER = 1000   # used by fps
 
 #-----------------------------------------------------------------------------------------------
@@ -268,12 +268,12 @@ def get_center(x,y,w,h):
 if __name__ == '__main__':
     try:
         ct = PiCamTrack().start()
+        first = True
         while True:
             cam_data = ct.read()
-            cam_pos = [cam_data[1],cam_data[2]]
-            print("Cam at (%i,%i) maxVal=%0.4f/%0.4f  " %( cam_pos[0], cam_pos[1], cam_data[0], MAX_SEARCH_THRESHOLD ))           
-
-            
+            cam_pos1 = [cam_data[1],cam_data[2]]
+            print("Cam at (%i,%i) maxVal=%0.4f/%0.4f  " %( cam_pos1[0], cam_pos1[1], cam_data[0], MAX_SEARCH_THRESHOLD ))                   
+             
     except KeyboardInterrupt:
         ct.stop()
         print("")
