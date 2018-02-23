@@ -47,14 +47,11 @@ print("Loading Please Wait ....")
 import os
 import sys
 import time
-import datetime
 import logging
 from threading import Thread
-from operator import itemgetter
-import numpy as np
 
 PROG_NAME = os.path.basename(__file__)
-PROG_VER = "ver 1.2"
+PROG_VER = "ver 1.3"
 # Find the full path of this python script
 SCRIPT_PATH = os.path.abspath(__file__)
 # get the path location only (excluding script name)
@@ -81,9 +78,9 @@ if not os.path.exists(CONFIG_FILE_PATH):
         print("   and Try Again")
         print("Exiting %s" % PROG_NAME)
         sys.exit(1)
-    f = open('config.py', 'wb')
-    f.write(WGET_FILE.read())
-    f.close()
+    f_name = open('config.py', 'wb')
+    f_name.write(WGET_FILE.read())
+    f_name.close()
 # Read Configuration variables from config.py file
 from config import *
 try:  # Add this check in case running on non RPI platform using web cam
@@ -220,12 +217,12 @@ class WebcamVideoStream:
 
 #-----------------------------------------------------------------------------------------------
 # Currently not used but included in case you want to check speed
-def show_FPS(start_time, frame_count):
+def show_fps(start_time, frame_count):
     if verbose:
         if frame_count >= FRAME_COUNTER:
             duration = float(time.time() - start_time)
-            FPS = float(frame_count / duration)
-            logging.info("Processing at %.2f fps last %i frames", FPS, frame_count)
+            loop_fps = float(frame_count / duration)
+            logging.info("Processing at %.2f fps last %i frames", loop_fps, frame_count)
             frame_count = 0
             start_time = time.time()
         else:
@@ -315,13 +312,11 @@ def cam_track():
     if WINDOW_BIGGER > 1:  # Note setting a bigger window will slow the FPS
         big_w = int(CAMERA_WIDTH * WINDOW_BIGGER)
         big_h = int(CAMERA_HEIGHT * WINDOW_BIGGER)
-
-    sw_maxVal = MAX_SEARCH_THRESHOLD  # Threshold Accuracy of search in image
-    xy_cam = (0,)    # xy of Cam Overall Position
+    sw_max_val = MAX_SEARCH_THRESHOLD  # Threshold Accuracy of search in image
+    xy_cam_pos = (0, 0)    # xy of Cam Overall Position
     xy_new = sw_xy    # xy of current search_rect
     xy_prev = xy_new  # xy of prev search_rect
     search_reset = False  # Reset search window back to center
-
     image1 = vs.read()    # Grab image from video stream thread
     if WEBCAM:
         if WEBCAM_HFLIP and WEBCAM_VFLIP:
@@ -331,7 +326,6 @@ def cam_track():
         elif WEBCAM_VFLIP:
             image1 = cv2.flip(image1, 0)
     search_rect = image1[sw_y:sw_y+sw_h, sw_x:sw_x+sw_w]  # Init centre search rectangle
-
     while True:
         if vid_from_file:
             flag, image1 = vs.read()
@@ -348,31 +342,27 @@ def cam_track():
                 elif WEBCAM_VFLIP:
                     image1 = cv2.flip(image1, 0)
         xy_new, xy_val = check_image_match(image1, search_rect)
-
         # Analyse new xy for issues
         if xy_moved(xy_prev, xy_new):
             if (xy_big_move(xy_prev, xy_new) or
                     xy_at_edge(xy_new) or
-                    xy_low_val(xy_val, sw_maxVal)):
+                    xy_low_val(xy_val, sw_max_val)):
                 search_reset = True  # Reset search to center
             else:
                 # update new cam position
-                xy_cam = xy_update(xy_cam, xy_prev, xy_new)
+                xy_cam_pos = xy_update(xy_cam_pos, xy_prev, xy_new)
                 xy_prev = xy_new
-
         if search_reset:   # Reset search_rect back to center
             if verbose and not log_only_moves:
                 logging.info("Reset search_rect img_xy(%i,%i) CamPos(%i,%i)",
-                             xy_new[0], xy_new[1], xy_cam[0], xy_cam[1])
+                             xy_new[0], xy_new[1], xy_cam_pos[0], xy_cam_pos[1])
             search_rect = image1[sw_y:sw_y+sw_h, sw_x:sw_x+sw_w]
             xy_new = sw_xy
             xy_prev = xy_new
             search_reset = False
-
         if verbose and not log_only_moves:
             logging.info("Cam Pos(%i,%i) %0.5f  img_xy(%i,%i)",
-                         xy_cam[0], xy_cam[1], xy_val, xy_new[0], xy_new[1])
-
+                         xy_cam_pos[0], xy_cam_pos[1], xy_val, xy_new[0], xy_new[1])
         if window_on:
             image2 = image1
             # Display openCV window information on RPI desktop if required
@@ -383,17 +373,15 @@ def cam_track():
                               (xy_new[0] + sw_w, xy_new[1] + sw_h),
                               green, LINE_THICKNESS)  # show search rect
             # Show Cam Position text on bottom of opencv window
-            m_text = ("CAM POS(%i,%i)   " % (xy_cam[0], xy_cam[1]))
+            m_text = ("CAM POS(%i,%i)   " % (xy_cam_pos[0], xy_cam_pos[1]))
             cv2.putText(image2, m_text,
                         (image_cx - len(m_text) * 3, CAMERA_HEIGHT - 15),
                         cv2.FONT_HERSHEY_SIMPLEX, CV_FONT_SIZE, green, 1)
             if WINDOW_BIGGER > 1:
                 image2 = cv2.resize(image2, (big_w, big_h))
             cv2.imshow('Cam-Track  (q in window to quit)', image2)
-
             if show_search_wind:
                 cv2.imshow('search rectangle', search_rect)
-
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 vs.stop()    # Stop video stream thread
                 cv2.destroyAllWindows()
@@ -406,14 +394,13 @@ if __name__ == '__main__':
         while True:
             # Save images to an in-program stream
             # Setup video stream on a processor Thread for faster speed
-
             if vid_from_file:   # Setup Video Stream Thread
                 vs = cv2.VideoCapture(vid_path)
                 while not vs.isOpened():
                     image1 = cv2.VideoCapture(vid_path)
                     cv2.waitKey(1000)
                     logging.info("Wait for the header")
-            elif WEBCAM:   #  Start Web Cam stream (Note USB webcam must be plugged in)
+            elif WEBCAM:   # Start Web Cam stream (Note USB webcam must be plugged in)
                 logging.info("Initializing USB Web Camera ....")
                 vs = WebcamVideoStream().start()
                 vs.CAM_SRC = WEBCAM_SRC
@@ -431,9 +418,6 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         vs.stop()
         print("")
-        print("+++++++++++++++++++++++++++++++++++")
         print("User Pressed Keyboard ctrl-c")
-        print("%s %s - Exiting" % (PROG_NAME, version))
-        print("+++++++++++++++++++++++++++++++++++")
-        print("")
+        print("%s %s - Exiting" % (PROG_NAME, PROG_VER))
         sys.exit()
