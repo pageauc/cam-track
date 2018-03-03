@@ -42,7 +42,7 @@ To Change Variables Use nano or text editor to edit config.py
 Good Luck  Claude ...
 
 """
-print("Loading Please Wait ....")
+print("Loading  Wait ....")
 # import the necessary packages
 import os
 import sys
@@ -51,7 +51,7 @@ import logging
 from threading import Thread
 
 PROG_NAME = os.path.basename(__file__)
-PROG_VER = "ver 1.3"
+PROG_VER = "ver 1.4"
 # Find the full path of this python script
 SCRIPT_PATH = os.path.abspath(__file__)
 # get the path location only (excluding script name)
@@ -59,23 +59,23 @@ SCRIPT_DIR = SCRIPT_PATH[0:SCRIPT_PATH.rfind("/")+1]
 SCRIPT_FILENAME = SCRIPT_PATH[SCRIPT_PATH.rfind("/")+1:SCRIPT_PATH.rfind(".")]
 LOG_FILE_PATH = SCRIPT_DIR + SCRIPT_FILENAME + ".log"
 CONFIG_FILE_PATH = SCRIPT_DIR + "config.py"
-print("%s %s using python2 and OpenCV2" % (PROG_NAME, PROG_VER))
-print("Camera movement (pan/tilt) Tracker using openCV2 template match searching")
-# Check for variable file to import and error out if not found.
+
+print("%s %s using and OpenCV" % (PROG_NAME, PROG_VER))
+print("Camera Movement (pan/tilt) Tracker using openCV2 template match search")
+# Check for config.py file to import and error out if not found.
 if not os.path.exists(CONFIG_FILE_PATH):
-    print("ERROR - Missing config.py file - Could not find Configuration file %s"
-          % CONFIG_FILE_PATH)
+    print("ERROR - Missing Configuration File %s" % CONFIG_FILE_PATH)
     import urllib2
     CONFIG_URL = "https://raw.github.com/pageauc/cam-track/master/config.py"
-    print("   Attempting to Download config.py file from %s" % CONFIG_URL)
+    print("INFO  - Attempting to Download config.py file from %s" % CONFIG_URL)
     try:
         WGET_FILE = urllib2.urlopen(CONFIG_URL)
     except:
         print("ERROR - Download of config.py Failed")
-        print("   Try Rerunning the cam-track-install.sh Again.")
-        print("   or")
-        print("   Perform GitHub curl install per Readme.md")
-        print("   and Try Again")
+        print("        Try Rerunning the cam-track-install.sh Again.")
+        print("        or")
+        print("        Perform GitHub curl install per Readme.md")
+        print("        and Try Again.")
         print("Exiting %s" % PROG_NAME)
         sys.exit(1)
     f_name = open('config.py', 'wb')
@@ -109,7 +109,7 @@ try:   # Check to see if opencv is installed
     import cv2
 except ImportError:
     print("------------------------------------")
-    print("Error - Could not import cv2 library")
+    print("ERROR - Could Not import cv2 library")
     print("")
     if sys.version_info > (2, 9):
         print("python3 failed to import cv2")
@@ -123,7 +123,7 @@ except ImportError:
     print("Exiting %s Due to Error" % PROG_NAME)
     sys.exit(1)
 
-#-----------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 class PiVideoStream:
     """ Create a Video Stream Thread """
     def __init__(self, resolution=(CAMERA_WIDTH, CAMERA_HEIGHT),
@@ -175,9 +175,10 @@ class PiVideoStream:
         """ indicate that the thread should be stopped """
         self.stopped = True
 
-#-----------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 class WebcamVideoStream:
-    def __init__(self, CAM_SRC=WEBCAM_SRC, CAM_WIDTH=WEBCAM_WIDTH, CAM_HEIGHT=WEBCAM_HEIGHT):
+    def __init__(self, CAM_SRC=WEBCAM_SRC, CAM_WIDTH=WEBCAM_WIDTH,
+                 CAM_HEIGHT=WEBCAM_HEIGHT):
         """
         initialize the video camera stream and read the first frame
         from the stream
@@ -215,34 +216,37 @@ class WebcamVideoStream:
         """ indicate that the thread should be stopped """
         self.stopped = True
 
-#-----------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 # Currently not used but included in case you want to check speed
 def show_fps(start_time, frame_count):
     if verbose:
         if frame_count >= FRAME_COUNTER:
             duration = float(time.time() - start_time)
             loop_fps = float(frame_count / duration)
-            logging.info("Processing at %.2f fps last %i frames", loop_fps, frame_count)
+            logging.info("Processing at %.2f fps last %i frames",
+                         loop_fps, frame_count)
             frame_count = 0
             start_time = time.time()
         else:
             frame_count += 1
     return start_time, frame_count
 
-#-----------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 def check_image_match(full_image, small_image):
     """
     Look for small_image in full_image and return best and worst results
     Try other MATCH_METHOD settings per config.py comments
-    For More Info See http://docs.opencv.org/3.1.0/d4/dc6/tutorial_py_template_matching.html
+    For More Info See
+    http://docs.opencv.org/3.1.0/d4/dc6/tutorial_py_template_matching.html
     """
+    # Search for small image rectangle match in full size image
     result = cv2.matchTemplate(full_image, small_image, MATCH_METHOD)
-    # Process result to return probabilities and Location of best and worst image match
-    # find search rectangle match in new image
+    # Process result data and return probability values and
+    # xy Location of best and worst image match
     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
     return max_loc, max_val
 
-#-----------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 def xy_at_edge(xy_loc):
     """ check if search rect is near edge plus buffer space """
     near_edge = False
@@ -251,11 +255,11 @@ def xy_at_edge(xy_loc):
             or xy_loc[1] < sw_buf_y
             or xy_loc[1] > CAMERA_HEIGHT - (sw_buf_y + sw_h)):
         near_edge = True
-        logging.info("xy(%i, %i) xyBuf(%i,%i)",
+        logging.info("xy(%i,%i) xyBuf(%i,%i)",
                      xy_loc[0], xy_loc[1], sw_buf_x, sw_buf_y)
     return near_edge
 
-#-----------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 def xy_low_val(cur_val, val_setting):
     """ Check if maxVal is below MAX_SEARCH_THRESHOLD value """
     bad_match = False
@@ -264,7 +268,7 @@ def xy_low_val(cur_val, val_setting):
         logging.info("maxVal=%0.5f  threshold=%0.4f", cur_val, val_setting)
     return bad_match
 
-#-----------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 def xy_moved(xy_prev, xy_loc):
     """ Check if x or y location has changed """
     moved = False
@@ -275,7 +279,7 @@ def xy_moved(xy_prev, xy_loc):
                      xy_loc[0] - xy_prev[0], xy_loc[1] - xy_prev[1])
     return moved
 
-#-----------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 def xy_big_move(xy_prev, xy_new):
     """ Check for large movements and set big_move """
     big_move = False
@@ -286,9 +290,9 @@ def xy_big_move(xy_prev, xy_new):
                      xy_new[0], xy_new[1], cam_move_x, cam_move_y)
     return big_move
 
-#-----------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 def xy_update(xy_cam, xy_prev, xy_new):
-    """ Update xy position of camera"""
+    """ Update xy position of camera based on original start position"""
     dx = 0
     dy = 0
     if abs(xy_prev[0] - xy_new[0]) > 0:
@@ -300,7 +304,7 @@ def xy_update(xy_cam, xy_prev, xy_new):
                  xy_cam[0], xy_cam[1], dx, dy)
     return xy_cam
 
-#-----------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 def cam_track():
     """
     Process steam images to find camera movement
@@ -325,16 +329,17 @@ def cam_track():
             image1 = cv2.flip(image1, 1)
         elif WEBCAM_VFLIP:
             image1 = cv2.flip(image1, 0)
-    search_rect = image1[sw_y:sw_y+sw_h, sw_x:sw_x+sw_w]  # Init centre search rectangle
+    # Initialize centre search rectangle
+    search_rect = image1[sw_y:sw_y+sw_h, sw_x:sw_x+sw_w]
     while True:
         if vid_from_file:
             flag, image1 = vs.read()
             if not flag:
                 cv2.waitKey(1000)
         else:
-            image1 = vs.read()    # Grab image from video stream thread
-             # Adjust image of WebCam
+            image1 = vs.read()  # Grab image from video stream thread or File
             if WEBCAM:
+                # Adjust image orientation for WebCam
                 if WEBCAM_HFLIP and WEBCAM_VFLIP:
                     image1 = cv2.flip(image1, -1)
                 elif WEBCAM_HFLIP:
@@ -355,14 +360,16 @@ def cam_track():
         if search_reset:   # Reset search_rect back to center
             if verbose and not log_only_moves:
                 logging.info("Reset search_rect img_xy(%i,%i) CamPos(%i,%i)",
-                             xy_new[0], xy_new[1], xy_cam_pos[0], xy_cam_pos[1])
+                             xy_new[0], xy_new[1],
+                             xy_cam_pos[0], xy_cam_pos[1])
             search_rect = image1[sw_y:sw_y+sw_h, sw_x:sw_x+sw_w]
             xy_new = sw_xy
             xy_prev = xy_new
             search_reset = False
         if verbose and not log_only_moves:
             logging.info("Cam Pos(%i,%i) %0.5f  img_xy(%i,%i)",
-                         xy_cam_pos[0], xy_cam_pos[1], xy_val, xy_new[0], xy_new[1])
+                         xy_cam_pos[0], xy_cam_pos[1],
+                         xy_val, xy_new[0], xy_new[1])
         if window_on:
             image2 = image1
             # Display openCV window information on RPI desktop if required
@@ -388,26 +395,28 @@ def cam_track():
                 logging.info("End Cam Tracking")
                 break
 
-#-----------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 if __name__ == '__main__':
     try:
         while True:
-            # Save images to an in-program stream
-            # Setup video stream on a processor Thread for faster speed
-            if vid_from_file:   # Setup Video Stream Thread
+            # Get images from file or camera video stream
+            if vid_from_file:
+                # Read Video Stream from File
                 vs = cv2.VideoCapture(vid_path)
                 while not vs.isOpened():
                     image1 = cv2.VideoCapture(vid_path)
                     cv2.waitKey(1000)
                     logging.info("Wait for the header")
-            elif WEBCAM:   # Start Web Cam stream (Note USB webcam must be plugged in)
+            elif WEBCAM:
+                # Start Web Cam stream (Note USB webcam must be plugged in)
                 logging.info("Initializing USB Web Camera ....")
                 vs = WebcamVideoStream().start()
                 vs.CAM_SRC = WEBCAM_SRC
                 vs.CAM_WIDTH = WEBCAM_WIDTH
                 vs.CAM_HEIGHT = WEBCAM_HEIGHT
                 time.sleep(4.0)  # Allow WebCam to initialize
-            else:  # Raspberry Pi Camera
+            else:
+                # Start Raspberry Pi Camera Stream
                 logging.info("Initializing Pi Camera ....")
                 vs = PiVideoStream().start()
                 vs.camera.rotation = CAMERA_ROTATION
