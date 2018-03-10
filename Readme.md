@@ -1,7 +1,7 @@
 # CAM-TRACK - Camera Movement Position Tracker Demo
 ### Pan-Tilt Camera Position Tracker using python, opencv template matching. Runs on Windows, Unix using a Web Cam or Raspberry Pi Camera or Web Cam
 
-### Quick Install   
+## Quick Install   
 Easy Install of cam-track onto Raspberry Pi or Debian Computer with latest Raspbian. 
 
     curl -L https://raw.github.com/pageauc/cam-track/master/cam-track-install.sh | bash
@@ -13,7 +13,7 @@ This install can also be done directly on an Internet connected Raspberry Pi via
 Note - A Raspbian apt-get update and upgrade will be performed as part of install 
 so it may take some time if these are not up-to-date
 
-#### Windows and Non RPI Unix Install
+## Windows and Non RPI Unix Install
 For Windows and Unix computer platforms(non RPI or Debian) ensure you have the most up-to-date
 python version see https://www.python.org/downloads/ for latest versions.  The latest versions
 include numpy and recent opencv that is required to run this code.  You will also need a USB
@@ -22,7 +22,7 @@ https://raw.github.com/pageauc/cam-track and select the green Clone or download 
 the files will be cloned or zipped to a cam-track folder.  You can run the code from
 console, gui desktop or from python IDLE application. 
  
-#### or Manual Install   
+## Manual Install   
 From logged in RPI SSH session or console terminal perform the following.
 
     wget https://raw.github.com/pageauc/cam-track/master/cam-track-install.sh
@@ -31,19 +31,19 @@ From logged in RPI SSH session or console terminal perform the following.
     cd rpi-cam-track
     ./cam-track.py
 
-### Reference Links
+## Reference Links
 YouTube Video Demo https://youtu.be/yjA3UtwbD80   
 YouTube Video Code Walkthrough https://youtu.be/lkh3YbbNdYg   
 RPI Forum Post https://www.raspberrypi.org/forums/viewtopic.php?p=1027463#p1027463  
 Github Repo https://github.com/pageauc/rpi-cam-track   
     
-### Program Description
+## Program Description
 This is a Windows, Unix or Raspberry pi computer openCV2 program that tracks camera (pan/tilt)
  movements using opencv template matching. It requires a Video File, Web Cam, 
  RPI camera module installed and working. The program is 
 written in python2/3 and uses openCV2 or 3.  
 
-### How It Works
+## How It Works
 Camera video stream (or video file) captures image frames then crops a search rectangle
 from the center of an image. It then locates the cropped image rectangle in subsequent
 images based on a score value and returns the x y location in the image based on a
@@ -59,7 +59,8 @@ where the camera is mounted on a moving platform or object, Etc.
 I will be working to implement Robot (without wheel encoders) Navigation
 Test using this camera tracking.
 
-### Project - More accurate Robot Navigation without wheel encoders using camera tracking
+## Project Improvements
+More accurate Robot Navigation without wheel encoders using camera tracking
 I am looking at saving high value search rectangles that
 are spaced out around the full xy range of the camera movement and use those
 to correct any tracking errors. These check point rectangles will also need to
@@ -74,12 +75,12 @@ threaded.
 If you decide to try this as well, let me know.
 Claude ...
 
-Note: This application is a demo and is currently still in development, but I 
+***Note:*** This application is a demo and is currently still in development, but I 
 thought it could still be useful, since I was not able to find a similar
 RPI application that does this.  Will try to implement an object searcher based
 on this demo.
                          
-### Tuning
+## Tuning
 You may have to experiment with some settings to optimize performance. See comments in
 config.py regarding MATCH_METHOD values.     
 For more information regarding match
@@ -102,7 +103,7 @@ various Raspberry Pi computers and then edit on my PC using NotePad ++.
 
 The main variables are
 
-#### MAX_SEARCH_THRESHOLD - default is .97
+### MAX_SEARCH_THRESHOLD - default is .97
 This variable sets the value for the highest accuracy for maintaining a 
 lock on the search rectangle found in the stream images.  Otherwise another similar block will be returned.  
 Setting this higher will force a closer match to the original search rectangle. 
@@ -110,7 +111,7 @@ If you have a unique background features then set this higher eg .98, .99
 or for a background with fewer unique features set it lower since the match criteria
 will not be able to be met.  Review debug data for your environment.
 
-#### cam_move_x and cam_move_y - defaults 10 and 8
+### cam_move_x and cam_move_y - defaults 10 and 8
 These variables set the maximum x and y pixel movement allowed in one loop cycle.
 This reduces unexpected cam position changes when objects move through the 
 camera image view quickly.  
@@ -127,12 +128,12 @@ Use a text editor to review config.py file for other variable settings.  Eg.
 nano editor is just a suggestion.  You can use whatever editor you are
 comfortable with
 
-### Development Ideas
+## Development Ideas
 
 * Save high value search rectangles and position data so when the camera
 view is later in the same zone or vicinity it can use the reference to correct
 camera position.
-* Have a library of preset images of objects or things that can be recognized.
+* Have a library of pre-set images of objects or things that can be recognized.
 this could be used for finding something in the camera view.
 * Change or add feature to have camera position tracked in degrees so left
 would start at 360 and right 0 rather than left starting negative and right positive.
@@ -143,7 +144,7 @@ specific +- range) This could include since last reading.  This might be useful 
 repeating actions based on camera tracking.
 * Add passing of video file path and/or other information via command line parameter(s)
 
-### Credits
+## Credits
 
 Thanks to Adrian Rosebrock jrosebr1 at http://www.pyimagesearch.com 
 for the PiVideoStream Class code available on github at
