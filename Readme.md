@@ -1,6 +1,5 @@
-# cam-track.py  - Camera Movement Position Tracker Demo
-### Pan-Tilt Camera Position Tracker using python, opencv template matching 
-### Runs on Windows, Unix using a Web Cam or Raspberry Pi Camera or Web Cam
+# CAM-TRACK - Camera Movement Position Tracker Demo
+### Pan-Tilt Camera Position Tracker using python, opencv template matching. Runs on Windows, Unix using a Web Cam or Raspberry Pi Camera or Web Cam
 
 ### Quick Install   
 Easy Install of cam-track onto Raspberry Pi or Debian Computer with latest Raspbian. 
